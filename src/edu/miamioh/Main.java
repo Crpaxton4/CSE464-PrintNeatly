@@ -10,9 +10,9 @@ import java.util.Scanner;
 /**
  * Consider the problem of neatly printing a paragraph with a monospaced font
  * (all characters having the same width) on a printer. The input text is a
- * sequence of n words of lengths l[0], l[1], ,,, l[n-1] , measured in characters.
+ * sequence of n words of lengths l[0], l[1], ..., l[n-1] , measured in characters.
  * We want to print this paragraph neatly on a number of lines that hold a maximum
- * of M characters each. Our criterion of “neatness” is as follows. If a given
+ * of M characters each. Our criterion of "neatness" is as follows. If a given
  * line contains words i through j, where i <= j , and we leave exactly one space
  * between words, the number of extra space characters at the end of the line is
  * [EDIT: you are to figure this out], which must be nonnegative so that the words
@@ -42,9 +42,9 @@ public class Main {
 
 
     static int unusedSpace(int i, int j, int[] cumSumOfWordLengths, int maxline){
-
-        return 0; //If S[k] is the cumulative sum of word lengths up to word k, or 0 if k < 0
-                  //Then this should be the value M - (S[j] - S[i-1] + j - i)
+    	//If S[k] is the cumulative sum of word lengths up to word k, or 0 if k < 0
+        //Then this should be the value M - (S[j] - S[i-1] + j - i)
+        return maxline - (cumSumOfWordLengths[j] - cumSumOfWordLengths[i-1] + j - i); 
     }
 
     static int printNeatly(String[] words, int maxline, OutputStream out){
@@ -59,20 +59,45 @@ public class Main {
     }
 
     static boolean checkThatNoLinesStartOrEndWithSpaces(String text){
+    	String[] lines = text.split("\n");
+    	for(String line : lines) {
+    		if(!line.equals(line.trim())) {
+    			return false;
+    		}
+    	}
         return true; // false means extra spaces found
     }
 
     static boolean checkThatNoMoreThanOneSpaceBetweenWords(String text){
-
+    	String[] words = text.split(" ");
+    	for(String word : words) {
+    		if(word.isEmpty()) {
+    			return false;
+    		}
+    	}
+        
         return true; //false means multiple spaces in a row were found
     }
 
     static boolean checkThatAllLinesAreLessThanMax(String text, int maxline){
+    	String[] lines = text.split("\n");
+    	for(String line : lines) {
+    		if(line.length() > maxline) {
+    			return false;
+    		}
+    	}
         return true; // false means you output a line that was too long
     }
 
-    static int computeCostFromOutput(String text, int maxline){
-        return INFINITY;  // Compute the cost to verify that
+	static int computeCostFromOutput(String text, int maxline){
+    	String[] lines = text.split("\n");
+    	int totalCost = 0;
+    	
+    	for(String line : lines) {
+    		totalCost += Math.pow((maxline - line.length()), 3);
+    	}
+    
+        return totalCost;  // Compute the cost to verify that
                           // it matches what we get from printNeatly
     }
 

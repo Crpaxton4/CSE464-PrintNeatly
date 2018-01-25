@@ -273,7 +273,7 @@ public class Main {
 				System.out.print(args[arg]);
 				System.out.print(", average running time: ");
 				System.out.println(average);
-				System.out.print("max line lentgh: ");
+				System.out.print("max line length: ");
 				System.out.println(args[arg + 1]);
 				System.out.print("cost: ");
 				System.out.println(cost);

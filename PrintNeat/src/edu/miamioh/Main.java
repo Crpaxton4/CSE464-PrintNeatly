@@ -104,8 +104,8 @@ public class Main {
 		int i = l.i;
 		int j = l.j;
 
-		str.append(words[i - 1]);
-		for (int k = i; k < j - 1; k++) {
+		str.append(words[i-1]);
+		for (int k = i; k < j; k++) {
 			str.append(" ");
 			str.append(words[k]);
 
@@ -119,7 +119,8 @@ public class Main {
 		int[] cumSumOfWordLengths = cumSumOfWordLengths(words);
 		int[] solutions = new int[cumSumOfWordLengths.length];
 		int[] startOflines = new int[cumSumOfWordLengths.length];
-
+		
+		startOflines[0] = 0;
 		solutions[0] = 0;
 
 		for (int j = 1; j < cumSumOfWordLengths.length; j++) {
@@ -150,13 +151,12 @@ public class Main {
 		Stack<Line> lines = new Stack<Line>();
 
 		int end = words.length;
-
 		
-		do {
+		while (end != 0) {
 			Line l = new Line(startOflines[end], end, solutions[end]);
 			lines.push(l);
 			end = startOflines[end] - 1;
-		}while (end != startOflines[1] - 1);
+		}
 
 		return lines;
 	}

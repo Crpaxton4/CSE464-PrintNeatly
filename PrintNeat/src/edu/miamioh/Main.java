@@ -234,7 +234,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		if(args.length % 2 != 0) System.err.println("There are not enough areguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
+		if(args.length % 2 != 0) System.err.println("There are not enough arguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
 
 		for (int arg = 0; arg < args.length; arg += 2) {
 			try {
@@ -242,7 +242,7 @@ public class Main {
 				try {
 					MAXLINE = Integer.parseInt(args[arg + 1]);
 				}catch(NumberFormatException e) {
-					System.err.println("There are not enough areguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
+					System.err.println("There are not enough arguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
 				}
 
 				ByteArrayOutputStream result = new ByteArrayOutputStream();

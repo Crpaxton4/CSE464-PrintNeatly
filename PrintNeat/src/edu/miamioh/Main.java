@@ -69,10 +69,13 @@ public class Main {
 
 		if (extraSpaces < 0) {
 			return INFINITY;
+
 		} else if (j == cumSumOfWordLengths.length - 1 && extraSpaces >= 0) {
 			return 0;
+
 		} else {
 			return (int) Math.pow(extraSpaces, 3);
+
 		}
 	}
 
@@ -82,6 +85,7 @@ public class Main {
 		// or INFINITY of the words don't fit.
 		// The last line has no cost.
 		// (e.g. there is no penalty for unused spaces on the last line).
+
 		Stack<Line> solution = dynamicSolution(words, maxLine);
 		StringBuffer str = new StringBuffer();
 		Line l = null;
@@ -89,10 +93,8 @@ public class Main {
 		while (!solution.empty()) {
 			l = solution.pop();
 			str.append(getLineAsStringBuffer(words, l));
-			str.append("\n");
 		}
 
-		out.flush();
 		out.write(str.toString().getBytes());
 
 		return l.cost; // The total cost (sum of unusedSpace^3 for
@@ -111,7 +113,7 @@ public class Main {
 
 		}
 
-		return str;
+		return str.append('\n');
 	}
 
 	static Stack<Line> dynamicSolution(String[] words, int maxLine) {
@@ -127,9 +129,9 @@ public class Main {
 
 			int min = INFINITY;
 			int index = -1;
+			int totalCost;
 			for (int i = 1; i <= j; i++) {
 
-				int totalCost;
 				if (lineCost(i, j, cumSumOfWordLengths, maxLine) == INFINITY) {
 					totalCost = INFINITY;
 				} else {
@@ -142,7 +144,7 @@ public class Main {
 				}
 
 			}
-			
+
 			solutions[j] = min;
 			startOflines[j] = index;
 
@@ -173,15 +175,21 @@ public class Main {
 
 	}
 
+	/*
+	 * 
+	 * Verifier Methods
+	 * 
+	 */
+
 	static boolean checkThatNoLinesStartOrEndWithSpaces(String text) {
 		String[] lines = text.split("\n");
 		for (String line : lines) {
-			if (line.charAt(line.length()-1) == ' ' || line.charAt(0) == ' ') {
+			if (line.charAt(line.length() - 1) == ' ' || line.charAt(0) == ' ') {
 				// false if line starts or ends with space
 				return false;
 			}
 		}
-		return true; 
+		return true;
 	}
 
 	static boolean checkThatNoMoreThanOneSpaceBetweenWords(String text) {
@@ -192,7 +200,7 @@ public class Main {
 			}
 		}
 
-		return true; 
+		return true;
 	}
 
 	static boolean checkThatAllLinesAreLessThanMax(String text, int maxline) {
@@ -202,26 +210,40 @@ public class Main {
 				return false; // false means you output a line that was too long
 			}
 		}
-		return true; 
+		return true;
 	}
 
 	static int computeCostFromOutput(String text, int maxline) {
 		String[] lines = text.split("\n");
 		int totalCost = 0;
 
-		for(int i = 0; i < lines.length-1; i++) { // -1 so that extra space in last line is ignored
+		for (int i = 0; i < lines.length - 1; i++) { // -1 so that extra space in last line is ignored
 			totalCost += Math.pow((maxline - lines[i].length()), 3);
 		}
 
 		return totalCost; // Compute the cost to verify that
-						  // it matches what we get from printNeatly
+							// it matches what we get from printNeatly
 	}
 
-	public static void main(String[] args) {
+	/*
+	 * 
+	 * Main Driver Method
+	 * 
+	 * 
+	 */
 
-		for (String arg : args) {
+	public static void main(String[] args) {
+		
+		if(args.length % 2 != 0) System.err.println("There are not enough areguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
+
+		for (int arg = 0; arg < args.length; arg += 2) {
 			try {
-				String[] words = readWordsFromFile(arg);
+				String[] words = readWordsFromFile(args[arg]);
+				try {
+					MAXLINE = Integer.parseInt(args[arg + 1]);
+				}catch(NumberFormatException e) {
+					System.err.println("There are not enough areguments.\nEach file must be followed by the max line length.\nE.g. [filename1] [maxline1] [filename2] [maxline3] ...");
+				}
 
 				ByteArrayOutputStream result = new ByteArrayOutputStream();
 				long trials = 0;
@@ -229,7 +251,7 @@ public class Main {
 				long stop = 0;
 				long start = System.currentTimeMillis();
 				long cost = 0;
-				while (total < 30) {
+				while (total < 30*1000) {
 					result.reset();
 					cost = printNeatly(words, MAXLINE, result);
 					stop = System.currentTimeMillis();
@@ -239,20 +261,23 @@ public class Main {
 				float average = total / (float) trials;
 
 				String text = result.toString();
-				assert checkThatAllLinesAreLessThanMax(text, MAXLINE);				
-				assert checkThatNoLinesStartOrEndWithSpaces(text);				
-				assert checkThatNoMoreThanOneSpaceBetweenWords(text);				
+				assert checkThatAllLinesAreLessThanMax(text, MAXLINE);
+				assert checkThatNoLinesStartOrEndWithSpaces(text);
+				assert checkThatNoMoreThanOneSpaceBetweenWords(text);
 				assert computeCostFromOutput(text, MAXLINE) == cost;
 
 				FileWriter f = new FileWriter("output.txt");
 				f.write(text);
 				f.close();
 
-				System.out.print(arg);
+				System.out.print(args[arg]);
 				System.out.print(", average running time: ");
 				System.out.println(average);
-				System.out.print(", cost: ");
+				System.out.print("max line lentgh: ");
+				System.out.println(args[arg + 1]);
+				System.out.print("cost: ");
 				System.out.println(cost);
+				System.out.println();
 
 			} catch (IOException e) {
 				e.printStackTrace();

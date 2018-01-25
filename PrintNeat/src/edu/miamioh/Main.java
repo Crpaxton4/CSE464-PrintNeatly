@@ -104,7 +104,7 @@ public class Main {
 		int i = l.i;
 		int j = l.j;
 
-		str.append(words[i-1]);
+		str.append(words[i - 1]);
 		for (int k = i; k < j; k++) {
 			str.append(" ");
 			str.append(words[k]);
@@ -119,7 +119,7 @@ public class Main {
 		int[] cumSumOfWordLengths = cumSumOfWordLengths(words);
 		int[] solutions = new int[cumSumOfWordLengths.length];
 		int[] startOflines = new int[cumSumOfWordLengths.length];
-		
+
 		startOflines[0] = 0;
 		solutions[0] = 0;
 
@@ -142,7 +142,7 @@ public class Main {
 				}
 
 			}
-			System.out.println("Total Cost [" + j + "] = " + min + " : [" + index + ", " + j + "]");
+			
 			solutions[j] = min;
 			startOflines[j] = index;
 
@@ -151,7 +151,7 @@ public class Main {
 		Stack<Line> lines = new Stack<Line>();
 
 		int end = words.length;
-		
+
 		while (end != 0) {
 			Line l = new Line(startOflines[end], end, solutions[end]);
 			lines.push(l);
@@ -167,7 +167,6 @@ public class Main {
 
 		for (int i = 1; i <= words.length; i++) {
 			cumSumOfWordLengths[i] = cumSumOfWordLengths[i - 1] + words[i - 1].length();
-			System.out.println(cumSumOfWordLengths[i] + " " + words[i - 1]);
 		}
 
 		return cumSumOfWordLengths;
@@ -177,44 +176,45 @@ public class Main {
 	static boolean checkThatNoLinesStartOrEndWithSpaces(String text) {
 		String[] lines = text.split("\n");
 		for (String line : lines) {
-			if (!line.equals(line.trim())) {
+			if (line.charAt(line.length()-1) == ' ' || line.charAt(0) == ' ') {
+				// false if line starts or ends with space
 				return false;
 			}
 		}
-		return true; // false means extra spaces found
+		return true; 
 	}
 
 	static boolean checkThatNoMoreThanOneSpaceBetweenWords(String text) {
 		String[] words = text.split(" ");
 		for (String word : words) {
 			if (word.isEmpty()) {
-				return false;
+				return false; // false means multiple spaces in a row were found
 			}
 		}
 
-		return true; // false means multiple spaces in a row were found
+		return true; 
 	}
 
 	static boolean checkThatAllLinesAreLessThanMax(String text, int maxline) {
 		String[] lines = text.split("\n");
 		for (String line : lines) {
 			if (line.length() > maxline) {
-				return false;
+				return false; // false means you output a line that was too long
 			}
 		}
-		return true; // false means you output a line that was too long
+		return true; 
 	}
 
 	static int computeCostFromOutput(String text, int maxline) {
 		String[] lines = text.split("\n");
 		int totalCost = 0;
 
-		for (String line : lines) {
-			totalCost += Math.pow((maxline - line.length()), 3);
+		for(int i = 0; i < lines.length-1; i++) { // -1 so that extra space in last line is ignored
+			totalCost += Math.pow((maxline - lines[i].length()), 3);
 		}
 
 		return totalCost; // Compute the cost to verify that
-							// it matches what we get from printNeatly
+						  // it matches what we get from printNeatly
 	}
 
 	public static void main(String[] args) {
@@ -222,7 +222,6 @@ public class Main {
 		for (String arg : args) {
 			try {
 				String[] words = readWordsFromFile(arg);
-				System.out.println(Arrays.toString(words));
 
 				ByteArrayOutputStream result = new ByteArrayOutputStream();
 				long trials = 0;
@@ -230,19 +229,19 @@ public class Main {
 				long stop = 0;
 				long start = System.currentTimeMillis();
 				long cost = 0;
-				// while (total < 1) {
-				result.reset();
-				cost = printNeatly(words, MAXLINE, result);
-				stop = System.currentTimeMillis();
-				total = stop - start;
-				trials += 1;
-				// }
+				while (total < 30) {
+					result.reset();
+					cost = printNeatly(words, MAXLINE, result);
+					stop = System.currentTimeMillis();
+					total = stop - start;
+					trials += 1;
+				}
 				float average = total / (float) trials;
 
 				String text = result.toString();
-				assert checkThatAllLinesAreLessThanMax(text, MAXLINE);
-				assert checkThatNoLinesStartOrEndWithSpaces(text);
-				assert checkThatNoMoreThanOneSpaceBetweenWords(text);
+				assert checkThatAllLinesAreLessThanMax(text, MAXLINE);				
+				assert checkThatNoLinesStartOrEndWithSpaces(text);				
+				assert checkThatNoMoreThanOneSpaceBetweenWords(text);				
 				assert computeCostFromOutput(text, MAXLINE) == cost;
 
 				FileWriter f = new FileWriter("output.txt");

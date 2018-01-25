@@ -251,7 +251,7 @@ public class Main {
 				long stop = 0;
 				long start = System.currentTimeMillis();
 				long cost = 0;
-				while (total < 30*1000) {
+				while (total < 1000) {
 					result.reset();
 					cost = printNeatly(words, MAXLINE, result);
 					stop = System.currentTimeMillis();
